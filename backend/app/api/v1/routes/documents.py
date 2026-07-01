@@ -13,6 +13,7 @@ from app.api.v1.dependencies import get_current_user
 from app.models.user import User
 from app.models.document import Document
 from app.schemas.document import DocumentResponse
+from app.worker.tasks import process_document
 
 router = APIRouter()
 
@@ -49,7 +50,7 @@ def upload_document(
     db.commit()
     db.refresh(document)
 
-    # TODO: kick off Celery task here (Phase 3b)
+    process_document.delay(str(document.id))
 
     return DocumentResponse(
         id=str(document.id),
