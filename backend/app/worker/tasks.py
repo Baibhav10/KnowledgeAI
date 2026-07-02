@@ -1,27 +1,21 @@
 """
 Celery tasks for document processing.
-Each task receives a document_id and processes it through the pipeline:
-1. Extract text from the file
-2. Chunk the text
-3. Generate embeddings
-4. Store in pgvector
-Steps 2-4 are stubbed for now — we'll fill them in Phase 3c and 3d.
+Now includes text extraction and chunking (Phase 3c).
+Embeddings will be added in Phase 3d.
 """
 import logging
 from app.worker.celery_app import celery_app
 from app.core.database import SessionLocal
+from app.core.extractor import extract_text
+from app.core.chunker import chunk_text
 from app.models.document import Document
+from app.models.chunk import Chunk
 
 logger = logging.getLogger(__name__)
 
 
 @celery_app.task(bind=True, max_retries=3)
 def process_document(self, document_id: str):
-    """
-    Main document processing pipeline.
-    bind=True gives us access to `self` so we can retry on failure.
-    max_retries=3 means Celery will retry up to 3 times before marking as failed.
-    """
     db = SessionLocal()
     try:
         document = db.query(Document).filter(Document.id == document_id).first()
@@ -34,13 +28,30 @@ def process_document(self, document_id: str):
         db.commit()
         logger.info("Processing document %s (%s)", document_id, document.file_type)
 
-        # TODO Phase 3c: extract text and chunk it
-        # TODO Phase 3d: generate embeddings and store in pgvector
+        # Extract text
+        text = extract_text(document.file_path, document.file_type)
+        logger.info("Extracted %d characters from document %s", len(text), document_id)
 
-        # Mark as completed for now
+        # Chunk text
+        chunks = chunk_text(text)
+        logger.info("Created %d chunks for document %s", len(chunks), document_id)
+
+        # Save chunks to database
+        for index, chunk_text_content in enumerate(chunks):
+            chunk = Chunk(
+                document_id=document.id,
+                chunk_index=index,
+                text=chunk_text_content,
+            )
+            db.add(chunk)
+
+        db.commit()
+
+        # TODO Phase 3d: generate embeddings for each chunk
+
         document.status = "completed"
         db.commit()
-        logger.info("Document %s completed", document_id)
+        logger.info("Document %s completed with %d chunks", document_id, len(chunks))
 
     except Exception as exc:
         document.status = "failed"
