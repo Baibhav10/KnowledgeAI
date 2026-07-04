@@ -1,0 +1,52 @@
+.shell { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; height: 52px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.wordmark {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px; letter-spacing: -0.3px; color: var(--text);
+}
+.wordmark em { color: var(--accent); font-style: italic; }
+
+.nav { display: flex; gap: 0; align-items: center; }
+
+.navItem {
+  font-size: 11px; font-weight: 400;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text2); padding: 6px 14px; cursor: pointer;
+  position: relative; transition: color 0.2s; text-decoration: none;
+}
+.navItem::after {
+  content: ''; position: absolute;
+  bottom: -1px; left: 14px; right: 14px;
+  height: 1px; background: var(--text);
+  width: 0; transition: width 0.25s ease;
+}
+.navItem:hover { color: var(--text); }
+.navItem:hover::after, .navItem.active::after { width: calc(100% - 28px); }
+.navItem.active { color: var(--text); }
+
+.topbarRight { display: flex; align-items: center; gap: 10px; }
+
+.modeBtn {
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text2); background: transparent;
+  border: 1px solid var(--border2); padding: 5px 12px;
+  border-radius: 2px; cursor: pointer; transition: all 0.2s;
+}
+.modeBtn:hover { color: var(--text); border-color: var(--text2); }
+
+.logoutBtn {
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--pill-text); background: var(--pill);
+  border: none; padding: 6px 14px; border-radius: 2px; cursor: pointer;
+  transition: opacity 0.2s;
+}
+.logoutBtn:hover { opacity: 0.75; }
+
+.main { flex: 1; overflow: hidden; }

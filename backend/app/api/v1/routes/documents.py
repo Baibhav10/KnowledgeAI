@@ -59,3 +59,23 @@ def upload_document(
         status=document.status,
         created_at=document.created_at,
     )
+
+@router.get("/", response_model=list[DocumentResponse])
+def list_documents(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    docs = db.query(Document)\
+        .filter(Document.organization_id == current_user.organization_id)\
+        .order_by(Document.created_at.desc())\
+        .all()
+    return [
+        DocumentResponse(
+            id=str(d.id),
+            name=d.name,
+            file_type=d.file_type,
+            status=d.status,
+            created_at=d.created_at,
+        )
+        for d in docs
+    ]

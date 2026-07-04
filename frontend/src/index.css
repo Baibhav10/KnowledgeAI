@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f5f0e8;
+  --bg2: #ede8de;
+  --bg3: #e3ddd2;
+  --text: #1a1714;
+  --text2: #7a7268;
+  --text3: #b0a898;
+  --accent: #b8860b;
+  --accent-light: #d4a853;
+  --border: #d4cec4;
+  --border2: #c4bdb2;
+  --surface: #faf7f2;
+  --pill: #1a1714;
+  --pill-text: #f5f0e8;
+}
+
+html.dark {
+  --bg: #141210;
+  --bg2: #1c1916;
+  --bg3: #242019;
+  --text: #f0ebe0;
+  --text2: #7a7268;
+  --text3: #4a4640;
+  --accent: #d4a853;
+  --accent-light: #e8c070;
+  --border: #2a2520;
+  --border2: #342e28;
+  --surface: #1a1714;
+  --pill: #f0ebe0;
+  --pill-text: #141210;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.35s, color 0.35s;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+* { position: relative; z-index: 1; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.fade-up { animation: fadeUp 0.45s ease both; }
+.fade-up-1 { animation: fadeUp 0.45s 0.08s ease both; opacity: 0; animation-fill-mode: both; }
+.fade-up-2 { animation: fadeUp 0.45s 0.16s ease both; opacity: 0; animation-fill-mode: both; }
+.fade-up-3 { animation: fadeUp 0.45s 0.24s ease both; opacity: 0; animation-fill-mode: both; }
+.fade-up-4 { animation: fadeUp 0.45s 0.32s ease both; opacity: 0; animation-fill-mode: both; }
+.fade-up-5 { animation: fadeUp 0.45s 0.40s ease both; opacity: 0; animation-fill-mode: both; }
+
+input, button, textarea { font-family: 'DM Mono', monospace; }
+a { color: inherit; text-decoration: none; }

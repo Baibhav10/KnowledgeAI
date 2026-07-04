@@ -1,0 +1,73 @@
+.page {
+  height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--bg); position: relative;
+}
+
+.modeBtn {
+  position: fixed; top: 20px; right: 24px;
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text2); background: transparent;
+  border: 1px solid var(--border2); padding: 5px 12px;
+  border-radius: 2px; cursor: pointer; transition: all 0.2s;
+}
+.modeBtn:hover { color: var(--text); }
+
+.card {
+  width: 100%; max-width: 380px;
+  padding: 40px 36px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.wordmark {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px; letter-spacing: -0.5px;
+  color: var(--text); margin-bottom: 6px;
+}
+.wordmark em { color: var(--accent); font-style: italic; }
+
+.sub { font-size: 11px; color: var(--text2); letter-spacing: 0.03em; margin-bottom: 28px; }
+
+.form { display: flex; flex-direction: column; gap: 16px; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+
+.label {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text2);
+}
+
+.input {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 2px; padding: 9px 12px;
+  font-size: 12px; color: var(--text); outline: none;
+  transition: border-color 0.2s;
+}
+.input:focus { border-color: var(--accent); }
+.input::placeholder { color: var(--text3); }
+
+.error {
+  font-size: 11px; color: #dc2626;
+  background: #fef2f2; border: 1px solid #fee2e2;
+  border-radius: 2px; padding: 8px 10px;
+}
+
+.submit {
+  margin-top: 4px; padding: 10px;
+  background: var(--pill); color: var(--pill-text);
+  border: none; border-radius: 2px;
+  font-size: 12px; letter-spacing: 0.04em;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.submit:hover { opacity: 0.8; }
+.submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.toggle {
+  margin-top: 20px; font-size: 11px; color: var(--text2); text-align: center;
+}
+.toggle span {
+  color: var(--accent); cursor: pointer; border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.toggle span:hover { border-bottom-color: var(--accent); }
