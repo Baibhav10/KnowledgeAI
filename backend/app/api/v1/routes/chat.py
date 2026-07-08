@@ -15,6 +15,10 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from fastapi import Request
+limiter = Limiter(key_func=get_remote_address)
 
 from app.core.database import get_db
 from app.core.embedder import generate_embedding
@@ -126,6 +130,7 @@ Document excerpts:
 
 @router.post("/")
 def chat(
+    request: Request,
     payload: ChatRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),

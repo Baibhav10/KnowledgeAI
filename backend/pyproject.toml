@@ -21,4 +21,5 @@ dependencies = [
     "sentence-transformers>=5.6.0",
     "pgvector>=0.4.2",
     "ollama>=0.6.2",
+    "slowapi>=0.1.10",
 ]
