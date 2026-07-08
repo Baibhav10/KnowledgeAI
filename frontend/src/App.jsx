@@ -21,6 +21,7 @@ export default function App() {
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/documents" element={<PrivateRoute><Documents /></PrivateRoute>} />
             <Route path="/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
+            <Route path="/chat/:conversationId" element={<PrivateRoute><Chat /></PrivateRoute>} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>

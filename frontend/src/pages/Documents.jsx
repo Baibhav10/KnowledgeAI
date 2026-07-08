@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import client from '../api/client';
 import styles from './Documents.module.css';
@@ -7,7 +8,9 @@ export default function Documents() {
   const [docs, setDocs] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [startingChat, setStartingChat] = useState(null);
   const fileRef = useRef();
+  const navigate = useNavigate();
 
   const load = () => client.get('/documents/').then(r => setDocs(r.data)).catch(() => {});
   useEffect(() => { load(); const t = setInterval(load, 4000); return () => clearInterval(t); }, []);
@@ -26,6 +29,28 @@ export default function Documents() {
     e.preventDefault(); setDragging(false);
     const file = e.dataTransfer.files[0];
     if (file) upload(file);
+  };
+
+  const deleteDoc = async (id) => {
+    if (!window.confirm('Delete this document? This cannot be undone.')) return;
+    try { await client.delete(`/documents/${id}`); await load(); }
+    catch (e) { alert('Failed to delete document'); }
+  };
+
+  const startChat = async (doc) => {
+    if (doc.status !== 'completed') return;
+    setStartingChat(doc.id);
+    try {
+      const { data } = await client.post('/conversations/', {
+        document_id: doc.id,
+        title: `Chat about ${doc.name}`,
+      });
+      navigate(`/chat/${data.id}`);
+    } catch (e) {
+      alert('Failed to start chat');
+    } finally {
+      setStartingChat(null);
+    }
   };
 
   const statusLabel = (s) => {
@@ -67,6 +92,8 @@ export default function Documents() {
           <span>Type</span>
           <span>Uploaded</span>
           <span>Status</span>
+          <span></span>
+          <span></span>
         </div>
 
         <div className={styles.docList}>
@@ -79,6 +106,14 @@ export default function Documents() {
                 <span className={styles.type}>{doc.file_type.toUpperCase()}</span>
                 <span className={styles.date}>{new Date(doc.created_at).toLocaleDateString()}</span>
                 <span className={`${styles.status} ${cls}`}>{label}</span>
+                <button
+                  className={styles.chatBtn}
+                  onClick={() => startChat(doc)}
+                  disabled={doc.status !== 'completed' || startingChat === doc.id}
+                >
+                  {startingChat === doc.id ? '…' : 'Chat →'}
+                </button>
+                <button className={styles.deleteBtn} onClick={() => deleteDoc(doc.id)}>✕</button>
               </div>
             );
           })}

@@ -14,7 +14,9 @@ from app.models.user import User
 from app.models.document import Document
 from app.schemas.document import DocumentResponse
 from app.worker.tasks import process_document
-
+import os
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
+from app.models.chunk import Chunk
 router = APIRouter()
 
 ALLOWED_EXTENSIONS = {"pdf", "docx", "txt"}
@@ -79,3 +81,26 @@ def list_documents(
         )
         for d in docs
     ]
+@router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_document(
+    document_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    document = db.query(Document).filter(
+        Document.id == document_id,
+        Document.organization_id == current_user.organization_id,
+    ).first()
+
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    # Delete chunks first (foreign key constraint)
+    db.query(Chunk).filter(Chunk.document_id == document.id).delete()
+
+    # Delete file from disk
+    if os.path.exists(document.file_path):
+        os.remove(document.file_path)
+
+    db.delete(document)
+    db.commit()

@@ -51,3 +51,28 @@
 .sProc { background: var(--bg3); color: var(--text2); }
 .sPend { background: var(--bg3); color: var(--text3); }
 .sFail { background: #fef2f2; color: #dc2626; }
+.tableHeader {
+  display: grid;
+  grid-template-columns: 40px 1fr 60px 100px 90px 70px 36px;
+  gap: 12px; padding: 0 0 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3);
+}
+
+.docRow {
+  display: grid;
+  grid-template-columns: 40px 1fr 60px 100px 90px 70px 36px;
+  gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  animation: fadeUp 0.35s ease both; opacity: 0; animation-fill-mode: both;
+}
+.chatBtn {
+  font-size: 10px; letter-spacing: 0.05em;
+  color: var(--accent); background: transparent;
+  border: 1px solid var(--accent); padding: 4px 8px;
+  border-radius: 2px; cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+}
+.chatBtn:hover { background: var(--accent); color: var(--pill-text); }
+.chatBtn:disabled { opacity: 0.3; cursor: not-allowed; }
