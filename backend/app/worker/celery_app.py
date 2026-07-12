@@ -1,15 +1,12 @@
-"""
-Celery application factory.
-BROKER_URL tells Celery where to send tasks (Redis).
-RESULT_BACKEND tells Celery where to store task results (also Redis).
-We keep Celery config here so it's separate from FastAPI's config.
-"""
+import os
 from celery import Celery
+
+BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
 
 celery_app = Celery(
     "knowledge_base_ai",
-    broker="redis://localhost:6379/0",
-    backend="redis://localhost:6379/0",
+    broker=BROKER_URL,
+    backend=BROKER_URL,
     include=["app.worker.tasks"],
 )
 
