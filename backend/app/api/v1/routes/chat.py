@@ -33,13 +33,12 @@ from datetime import datetime
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-SIMILARITY_THRESHOLD = 0.3
+SIMILARITY_THRESHOLD = 0.2
 MAX_HISTORY_TOKENS = 80000  # ~80k tokens, leave room for context and response
 APPROX_TOKENS_PER_CHAR = 0.25  # rough estimate: 1 token ≈ 4 chars
 
 
-def retrieve_chunks(query: str, org_id: str, limit: int, db: Session, previous_answer: str = "") -> list[dict]:
-    # If the question is short/vague, enrich it with the previous answer for better retrieval
+def retrieve_chunks(query: str, org_id: str, limit: int, db: Session, previous_answer: str = "", document_id: str = None) -> list[dict]:
     search_query = query
     if len(query.split()) < 8 and previous_answer:
         search_query = f"{query} {previous_answer[:300]}"
@@ -47,8 +46,11 @@ def retrieve_chunks(query: str, org_id: str, limit: int, db: Session, previous_a
     query_embedding = generate_embedding(search_query)
     embedding_str = "[" + ",".join(str(x) for x in query_embedding) + "]"
 
+    # Build document filter clause
+    doc_filter = "AND d.id = :document_id" if document_id else ""
+
     results = db.execute(
-        text("""
+        text(f"""
             SELECT
                 c.id AS chunk_id,
                 c.document_id,
@@ -61,6 +63,7 @@ def retrieve_chunks(query: str, org_id: str, limit: int, db: Session, previous_a
             WHERE d.organization_id = :org_id
               AND d.status = 'completed'
               AND c.embedding IS NOT NULL
+              {doc_filter}
             ORDER BY c.embedding <=> CAST(:embedding AS vector)
             LIMIT :limit
         """),
@@ -68,6 +71,7 @@ def retrieve_chunks(query: str, org_id: str, limit: int, db: Session, previous_a
             "embedding": embedding_str,
             "org_id": org_id,
             "limit": limit,
+            **({"document_id": document_id} if document_id else {}),
         }
     ).fetchall()
 
@@ -82,7 +86,6 @@ def retrieve_chunks(query: str, org_id: str, limit: int, db: Session, previous_a
         }
         for row in results
     ]
-
 def estimate_tokens(messages: list[dict]) -> int:
     """Rough token estimate based on character count."""
     total_chars = sum(len(m.get("content", "")) for m in messages)
@@ -151,6 +154,7 @@ def chat(
             limit=payload.limit,
             db=db,
             previous_answer=previous_answer,
+            document_id=payload.document_id,
         )
         logger.info("Retrieved %d chunks for question: %s", len(chunks), payload.question)
 

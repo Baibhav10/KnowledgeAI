@@ -78,6 +78,7 @@ export default function Chat() {
           messages: getHistory(),
           limit: 5,
           conversation_id: conversationId,
+          document_id: activeConv?.document_id,
         }),
       });
 

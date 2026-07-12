@@ -12,3 +12,4 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage] = []
     limit: int = 5
     conversation_id: Optional[str] = None
+    document_id: Optional[str] = None

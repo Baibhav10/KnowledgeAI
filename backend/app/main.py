@@ -13,7 +13,18 @@ limiter = Limiter(key_func=get_remote_address)
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title="Knowledge Base AI",
+    title="KnowledgeAI",
+    description="""
+    A Retrieval-Augmented Generation (RAG) API that lets users upload documents 
+    and chat with their content using a local AI model.
+
+    ## Features
+    - JWT authentication with multi-tenant organization model
+    - Document upload and async processing pipeline
+    - Vector similarity search via pgvector
+    - Streaming RAG chat with source citations
+    - Persistent conversation history per document
+    """,
         version=settings.APP_VERSION,
         docs_url="/docs",
         redoc_url="/redoc",
