@@ -17,6 +17,9 @@ from app.worker.tasks import process_document
 import os
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, status
 from app.models.chunk import Chunk
+from app.models.chunk import Chunk
+from app.models.conversation import Conversation
+from app.models.message import Message
 router = APIRouter()
 
 ALLOWED_EXTENSIONS = {"pdf", "docx", "txt"}
@@ -95,10 +98,18 @@ def delete_document(
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
 
-    # Delete chunks first (foreign key constraint)
+    # Delete messages → conversations → chunks → file → document
+    # Order matters: must delete child rows before parent rows
+    conversations = db.query(Conversation).filter(
+        Conversation.document_id == document.id
+    ).all()
+
+    for conv in conversations:
+        db.query(Message).filter(Message.conversation_id == conv.id).delete()
+    
+    db.query(Conversation).filter(Conversation.document_id == document.id).delete()
     db.query(Chunk).filter(Chunk.document_id == document.id).delete()
 
-    # Delete file from disk
     if os.path.exists(document.file_path):
         os.remove(document.file_path)
 
